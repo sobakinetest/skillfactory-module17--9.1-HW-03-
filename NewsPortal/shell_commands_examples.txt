@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from news.models import Author, Category, Post, Comment
+from news.resources import POST_TYPES
 user1 = User.objects.create_user('user1')
 user2 = User.objects.create_user('user2')
 auth1 = Author.objects.create(user=user1)
