@@ -1,0 +1,41 @@
+from django.contrib.auth.models import User
+from news.models import Author, Category, Post, Comment
+user1 = User.objects.create_user('user1')
+user2 = User.objects.create_user('user2')
+auth1 = Author.objects.create(user=user1)
+auth2 = Author.objects.create(user=user2)
+cat1 = Category.objects.create(name='Политика')
+cat2 = Category.objects.create(name='Технологии')
+cat3 = Category.objects.create(name='Спорт')
+cat4 = Category.objects.create(name='Культура')
+post1 = Post.objects.create(author=auth1, post_type='AR', title='Статья 1', content='Текст статьи 1...'*50, rating=0)
+post1.categories.add(cat1, cat2)
+post2 = Post.objects.create(author=auth2, post_type='AR', title='Статья 2', content='Текст статьи 2...'*50, rating=0)
+post2.categories.add(cat3)
+post3 = Post.objects.create(author=auth1, post_type='NW', title='Новость 1', content='Текст новости 1...'*50, rating=0)
+post3.categories.add(cat4)
+com1 = Comment.objects.create(post=post1, user=user1, text='Комментарий 1', rating=0)
+com2 = Comment.objects.create(post=post1, user=user2, text='Комментарий 2', rating=0)
+com3 = Comment.objects.create(post=post2, user=user1, text='Комментарий 3', rating=0)
+com4 = Comment.objects.create(post=post3, user=user2, text='Комментарий 4', rating=0)
+post1.like(); post1.like(); post1.dislike()  
+post2.like(); post2.like(); post2.like()     
+post3.dislike(); post3.dislike()             
+com1.like(); com1.like()             
+com2.dislike()                           
+com3.like()                              
+com4.dislike(); com4.dislike()       
+auth1.update_rating()
+auth2.update_rating()
+
+best_user = Author.objects.order_by('-rating').first()
+print(f"Лучший пользователь: {best_user.user.username}, рейтинг: {best_user.rating}")
+
+best_post = Post.objects.order_by('-rating').first()
+print(f"Лучшая статья: {best_post.created_at}, {best_post.author.user.username}, "
+      f"рейтинг: {best_post.rating}, заголовок: {best_post.title}, "
+      f"превью: {best_post.preview()}")
+
+comments = Comment.objects.filter(post=best_post).order_by('-created_at')
+for c in comments:
+    print(f"{c.created_at}, {c.user.username}, рейтинг: {c.rating}, текст: {c.text[:20]}...")
